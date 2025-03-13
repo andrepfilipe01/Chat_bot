@@ -1,6 +1,10 @@
 import glob
 import os
+import spacy
 from PyPDF2 import PdfReader
+
+# Load the spaCy model for sentence segmentation
+nlp = spacy.load("en_core_web_sm")
 
 def parse_all_pdfs(folder_path):
 
@@ -17,13 +21,18 @@ def parse_all_pdfs(folder_path):
             text = page.extract_text()
             all_text += text + "\n\n"
     
-    return all_text
+    # Process the text with spaCy to split it into sentences
+    doc = nlp(all_text)
+    
+    sentences = [sent.text.strip() for sent in doc.sents if sent.text.strip() != '']
+    
+    for sentence in sentences:
+        print(sentence)
 
 def main():
     print("Extracting text from PDFs...")
     pdf_folder = "./pdfs"
-    all_text = parse_all_pdfs(pdf_folder)
-    print(all_text)
+    parse_all_pdfs(pdf_folder)
 
 if __name__ == "__main__":
     main()
